@@ -30,6 +30,9 @@ class CombisumApp(ft.Column):
             "error": None
         }
         self.error = ft.Text(f"Error occurred", theme_style=ft.TextThemeStyle.DISPLAY_SMALL, visible=False)
+        self.output = ft.Row([ft.ProgressRing(), ft.Text("Calculating...")],
+                             alignment=ft.MainAxisAlignment.CENTER, visible=False)
+
         self.input_panel = ft.Column(
             [
                 ft.Text("Input _", theme_style=ft.TextThemeStyle.DISPLAY_SMALL),
@@ -40,7 +43,8 @@ class CombisumApp(ft.Column):
                 ),
                 ft.TextField(
                     label="Numbers",
-                    on_change=self.numbers_changed
+                    on_change=self.numbers_changed,
+                    on_submit=self.combisum 
                 ),
                 ft.ElevatedButton(
                     "Run",
@@ -53,14 +57,15 @@ class CombisumApp(ft.Column):
             [
                 ft.Text("Results", theme_style=ft.TextThemeStyle.DISPLAY_SMALL),
                 self.error,
-                ft.Text("Flag")
+                self.output
             ], expand=1
         )
 
         self.controls = [
             ft.Row([ft.Text("CombiSum", theme_style=ft.TextThemeStyle.DISPLAY_LARGE)]),
             ft.Divider(),
-            ft.Row([self.input_panel, self.output_panel], vertical_alignment=ft.CrossAxisAlignment.START)
+            ft.Row([self.input_panel, self.output_panel], 
+                   alignment=ft.CrossAxisAlignment.START)
         ]
 
     def target_changed(self, e):
@@ -72,16 +77,27 @@ class CombisumApp(ft.Column):
         self.update()
 
     def combisum(self, e):
+        self.output.visible = True
+        self.update()
+
         t_target = float(self.target)
         t_numbers = [float(x) for x in self.numbers.split(' ')]
 
         self.results, self.flag = combisum(t_target, t_numbers)
-
+        
         if self.flag['error']:
             self.error.visible = True
             self.error.value = f"Error occurred: {self.flag['error']}"
-        
+
+        output_slice = self.results[:15]
+        output_slice = [[str(y) for y in x] for x in output_slice]
+        output_slice = [ft.Text(' '.join(x)) for x in output_slice]
+        self.output = ft.Column(output_slice, expand=1)
+
         self.update()
+        
+        logger.info(f'Output: {self.output}')
+        logger.info(f'Error: {self.error}')
 
 
 #Define base page
