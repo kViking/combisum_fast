@@ -1,0 +1,44 @@
+INFO:flet_runtime:Assets path configured: /home/ellieo/Documents/python/flet/assets
+INFO:flet_runtime:Starting up UDS server on /tmp/s0rtx63TrX
+INFO:flet_runtime:Flet app has started...
+INFO:flet_runtime:App URL: /tmp/s0rtx63TrX
+INFO:flet_runtime:Starting Flet View app...
+INFO:flet_runtime:Flet View found in: /home/ellieo/.flet/bin/flet-0.24.1
+INFO:flet_runtime:App session started
+INFO:__main__:Started page
+415 INFO main[20]: Started page
+705373 2024-09-08 14:14:35,416 INFO main[20]: Started page
+709195 2024-09-08 14:19:02,950 INFO main[20]: Started page
+709820 2024-09-08 14:19:38,742 INFO main[20]: Started page
+710310 2024-09-08 14:20:08,782 INFO main[20]: Started page
+711376 2024-09-08 14:21:17,003 INFO main[20]: Started page
+712785 2024-09-08 14:22:51,952 INFO main[20]: Started page
+713078 2024-09-08 14:23:04,606 INFO main[20]: Started page
+713825 2024-09-08 14:23:53,291 INFO main[20]: Started page
+716448 2024-09-08 14:26:58,720 INFO main[20]: Started page
+717661 2024-09-08 14:28:21,157 INFO main[20]: Started page
+720537 2024-09-08 14:31:03,590 INFO main[20]: Started page
+721372 2024-09-08 14:31:49,175 INFO main[20]: Started page
+721950 2024-09-08 14:32:18,416 INFO main[20]: Started page
+722477 2024-09-08 14:32:44,499 INFO main[20]: Started page
+723852 2024-09-08 14:34:07,507 INFO main[20]: Started page
+725113 2024-09-08 14:35:22,924 INFO main[20]: Started page
+726522 2024-09-08 14:36:54,984 INFO main[20]: Started page
+727996 2024-09-08 14:38:24,720 INFO main[20]: Started page
+729165 2024-09-08 14:39:39,017 INFO main[22]: Started page
+730448 2024-09-08 14:40:55,540 INFO main[22]: Started page
+731014 2024-09-08 14:41:23,677 INFO main[22]: Started page
+767831 2024-09-08 21:13:21,452 INFO main[26]: Started page
+769654 2024-09-08 21:15:14,627 INFO main[26]: Started page
+771796 2024-09-08 21:17:38,755 INFO main[26]: Started page
+772459 2024-09-08 21:18:15,387 INFO main[26]: Started page
+773071 2024-09-08 21:18:48,455 INFO main[26]: Started page
+779920 2024-09-08 21:26:28,615 INFO main[26]: Started page
+786240 2024-09-08 21:33:31,530 INFO main[26]: Started page
+788131 2024-09-08 23:22:27,147 INFO main[26]: Started page
+790959 2024-09-08 23:25:36,376 INFO main[26]: Started page
+792208 2024-09-08 23:26:49,305 INFO main[26]: Started page
+796975 2024-09-08 23:32:13,567 INFO main[26]: Started page
+798038 2024-09-08 23:33:18,404 INFO main[33]: Started page
+799978 2024-09-08 23:35:14,990 INFO main[33]: Started page
+801492 2024-09-08 23:36:49,667 INFO main[33]: Started page
