@@ -1,5 +1,3 @@
-# Ignore flet_venv
-flet_venv
-__pycache__
-.pytest_cache
-*.log
+version https://git-lfs.github.com/spec/v1
+oid sha256:5f8045703ad58547765d92284df259b07b376bbb7ca72ac988d61f81e70eb5b3
+size 61
