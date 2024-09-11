@@ -26,8 +26,11 @@ def combisum(target, numbers):
         return [[],flag]
     
     int_numbers = [int(100*x) if int(100*x)/100 == x else None for x in numbers]
+    int_numbers = [x for x in int_numbers if x is not None]
     numbers = numbers if len(int_numbers) != len(numbers) else int_numbers
     target = int(100*target) if type(numbers[0]) == int else target
+
+    logger.info(f'Converted target: {target}\nlist: {numbers}')
 
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -46,7 +49,7 @@ def combisum(target, numbers):
     combinations = []
     for i in range(2, len(numbers) + 1):
         if flag['max_length'] and i > flag['max_length']:
-            flag["error"] = "Reached device's computational limit"
+            flag["error"] = f"CUDA not accessible. CPU run with restricted combination length {flag['max_length']}" if flag["cuda"] else "Reached device's computational limit"
             break
         try:
             logger.info(f"attempting combinations of {i} length")
@@ -56,6 +59,7 @@ def combisum(target, numbers):
         except Exception as e:
             logging.error(f"Error generating combinations: {e}")
             flag["error"] = "Reached device's computational limit"
+
             break
 
     valid_combinations = []
@@ -63,7 +67,7 @@ def combisum(target, numbers):
         indices = torch.where(torch.sum(combo, dim=1) == target)[0]
         valid_combinations.extend(combo[indices].tolist())
 
-    valid_combinations = [[x/100 for x in y] for y in valid_combinations]
+    valid_combinations = [[x/100 for x in y] for y in valid_combinations] if type(numbers[0]) == int else [[round(x, 2) for x in y] for y in valid_combinations]
 
     return [valid_combinations, flag]
 
