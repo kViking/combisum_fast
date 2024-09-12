@@ -49,3 +49,4 @@ build/ filter=lfs diff=lfs merge=lfs -text
 *.png filter=lfs diff=lfs merge=lfs -text
 *.frag filter=lfs diff=lfs merge=lfs -text
 *.dat filter=lfs diff=lfs merge=lfs -text
+build/Combisum/Combisum.pkg filter=lfs diff=lfs merge=lfs -text
