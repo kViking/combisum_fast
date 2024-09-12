@@ -1,9 +1,9 @@
 # Combisum
 
 ### Quickstart
-2. Click the green "code" button above and right of this ^
-3. Click "download as zip"
-4. The .exe is in the dist (distribution) folder
+1. Click the green "code" button above and right of this ^
+2. Click "download as zip"
+3. The .exe is in the dist (distribution) folder
 
 It'll open after a few seconds, so give it time. Because I didn't create any custom splash screen for loading, it may pop up a blank window until it loads. Eventually it should load a simple interface. After you've run a calculation, the button to copy it to your clipboard is on the bottom right and may be hidden if the window is too small.
 
