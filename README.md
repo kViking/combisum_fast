@@ -1,19 +1,19 @@
 # Combisum
 
 ### Quickstart
-1. Go to the github page for this [app](https://github.com/kviking/combisum_fast) 
-2. Click the green "code" button
+2. Click the green "code" button above and right of this ^
 3. Click "download as zip"
-4. Extract folder (you only actually need the build/windows folder)
-5. In said build/windows folder is the exe. I believe it needs to stay in the same directory as the rest of the stuff
+4. The .exe is in the dist (distribution) folder
 
-It'll open what looks like a blank window, because I didn't create any custom splash screen while loading yet. Eventually it should load a simple interface. After you've run a calculation, the button to copy it to your clipboard is on the bottom right and may be hidden if the window is too small.
+It'll open after a few seconds, so give it time. Because I didn't create any custom splash screen for loading, it may pop up a blank window until it loads. Eventually it should load a simple interface. After you've run a calculation, the button to copy it to your clipboard is on the bottom right and may be hidden if the window is too small.
 
 ### It's an app!
 ... but it's still not perfect. This beta version supports .tsv style copy and should run much faster than the previous web based version. It may hammer your CPU, it may hammer your GPU. It has essentially no safe operating limits, preferring instead to attempt to run larger and larger sets of numbers until there's not enough memory to hold them all. Among the known issues are:
 
-- No installer, requires a whole folder of crap
+- ~~No installer, requires a whole folder of crap~~ 
+    - Fixed!
 - Startup time is long and I don't know why yet
+    - Working theory now!
 - Layout shifts depending on content
 - Content is not scrollable and hides copy button in some window sizes
 - Error messages are not very descriptive and there's no way for a user to access more useful information
