@@ -3,7 +3,7 @@
 
 a = Analysis(
     ['combisum_fast.py'],
-    pathex=['C:\\Users\\ellieo\\Documents\\fastsum_venv\\Scipts'],
+    pathex=['C:\\User\\ellieo\\Documents\\venv_combi\\Scripts'],
     binaries=[],
     datas=[],
     hiddenimports=[],
@@ -26,14 +26,14 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=False,
+    upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\Users\\ellieo\\Documents\\combisum_fast\\assets\\logo_32x32.ico'],
+    icon=['C:\\Users\\ellieo\\Documents\\combisum_fast\\assets\\logo_48x48.ico'],
 )
