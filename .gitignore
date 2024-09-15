@@ -1,3 +1,6 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:dbddda4f3fe696fb38dee8b04aa2444454367fe68bb9a3a22c41b4132085e568
-size 69
+# Ignore flet_venv
+flet_venv
+__pycache__
+.pytest_cache
+*.log
+build/**

@@ -1,3 +1,3 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8f394a7698a30f708ea283771e9da397c305cab6ddd46361284868b606cd343c
-size 42
+flet==0.24.1
+pyperclip==1.9.0
+torch==2.4.1
