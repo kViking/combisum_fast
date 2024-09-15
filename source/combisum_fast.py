@@ -1,5 +1,4 @@
 import pyperclip
-import matplotlib as mpl
 import flet as ft
 from combimath import combisum
 from flet_core.control_event import ControlEvent
@@ -22,8 +21,6 @@ def main(page: Page) -> None:
     page.title = "Combisum GPU.0"
     page.vertical_alignment = MainAxisAlignment.START
     page.horizontal_alignment = CrossAxisAlignment.CENTER
-
-    mpl.use("svg")
 
     # Create result_text column to display results
     result_text = Column(expand=True, horizontal_alignment=CrossAxisAlignment.CENTER, alignment=MainAxisAlignment.CENTER)
