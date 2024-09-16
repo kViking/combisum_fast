@@ -5,8 +5,9 @@ from flet_core.control_event import ControlEvent
 from flet import (
     Page,
     Row,
-    Column,
     Text,
+    Card,
+    Column,
     TextField,
     TextButton,
     TextThemeStyle,
@@ -28,6 +29,13 @@ def main(page: Page) -> None:
     results = []
     history = []
     error = Text("", color=ft.colors.RED)
+
+    def toggle_dark_mode(event: ControlEvent) -> None:
+        # Toggle dark mode
+        page.theme_mode = ft.ThemeMode.DARK if page.theme_mode == ft.ThemeMode.LIGHT else ft.ThemeMode.LIGHT
+        page.update()
+
+    dark_mode_button = ft.IconButton(icon=ft.icons.LIGHT_MODE, tooltip="Toggle dark mode", on_click=toggle_dark_mode)
 
     def copy_results(event: ControlEvent) -> None:
         # Copy results to clipboard as .tsv raw values
@@ -99,48 +107,81 @@ def main(page: Page) -> None:
         [
             Row(
                 [
-                    Text('Input', expand=True, theme_style=TextThemeStyle.DISPLAY_SMALL),
-                ], expand=True
+                    dark_mode_button
+                ], expand=True,
+                alignment=MainAxisAlignment.END
             ),
             Row(
                 [
                     Column(
                         [
-                            target_text,
-                            array_text,
-                            button,
-                            history_view
-                        ], expand=True,
-                        horizontal_alignment=CrossAxisAlignment.CENTER,
-                        alignment=MainAxisAlignment.START
-                    ),
-                    Column(
-                        [
-                            Row(
-                                [
-                                    error,
-                                ], expand=True,
-                                alignment=MainAxisAlignment.CENTER
+                            Card(
+                                content=Column(
+                                    [
+                                        Text('Input', expand=True, theme_style=TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.LEFT),
+                                        target_text,
+                                        array_text,
+                                        Row(
+                                            [
+                                                button
+                                            ], expand=True,
+                                            alignment=MainAxisAlignment.END
+                                        ),
+                                    ], expand=True,
+                                    alignment=MainAxisAlignment.START,
+                                ), expand=True,
                             ),
                             Row(
-                                [
-                                    result_text,
-                                ], expand=True,
-                                alignment=MainAxisAlignment.CENTER
-                            ),
-                            Row(
-                                [
-                                    copy_button
-                                ], expand=True,
-                                alignment=MainAxisAlignment.END
+                                [Card(
+                                    content=Column(
+                                        [
+                                            Text('History', 
+                                                theme_style=TextThemeStyle.DISPLAY_SMALL, 
+                                                text_align=ft.TextAlign.LEFT, 
+                                                expand=True),
+                                            history_view
+                                        ], expand=True,
+                                        alignment=MainAxisAlignment.START,
+                                    ), expand=True,
+                                )],
+                                expand=True,
+                                alignment=MainAxisAlignment.START,
+                                vertical_alignment=CrossAxisAlignment.START
                             )
                         ], expand=True,
-                        scroll=ft.ScrollMode.ALWAYS,
-                        horizontal_alignment=CrossAxisAlignment.CENTER
+                    ),
+                    Column(
+                        [Card(
+                            content=Column(
+                                [
+                                    Text('Results', theme_style=TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.LEFT),
+                                    Row(
+                                        [
+                                            error,
+                                        ], expand=True,
+                                        alignment=MainAxisAlignment.CENTER
+                                    ),
+                                    Row(
+                                        [
+                                            result_text,
+                                        ], expand=True,
+                                        alignment=MainAxisAlignment.CENTER
+                                    ),
+                                    Row(
+                                        [
+                                            copy_button
+                                        ], expand=True,
+                                        alignment=MainAxisAlignment.END
+                                    )
+                                ], expand=True,
+                                alignment=MainAxisAlignment.START
+                            )
+                        )], expand=True,
+                        alignment=MainAxisAlignment.START
                     )
                     
                 ], expand=True,
-                tight=True,
+                vertical_alignment=CrossAxisAlignment.START
             )
         ]
     )
