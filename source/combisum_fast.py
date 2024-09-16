@@ -17,6 +17,17 @@ from flet import (
     CrossAxisAlignment,
 )
 
+class HistoryItem(TextButton):
+    def __init__(self, target: str, array: str, results, on_click_function) -> None:
+        super().__init__()
+        self.target = target
+        self.array = array
+        self.results = results
+        self.on_click = on_click_function
+        self.text = f"{self.target} | {self.array}"    
+        self.tooltip = "Re-run this calculation"
+
+
 def main(page: Page) -> None:
     # Set page properties
     page.title = "Combisum GPU.0"
@@ -41,7 +52,6 @@ def main(page: Page) -> None:
         # Copy results to clipboard as .tsv raw values
         tsv = "\n".join(["\t".join([str(y) for y in x]) for x in results[0]])
         pyperclip.copy(tsv)
-        print(tsv)
 
     def load_history(event: ControlEvent) -> None:
         nonlocal target_text, array_text, results, history, error
@@ -50,6 +60,7 @@ def main(page: Page) -> None:
         target_text.value = event.control.text.split(" | ")[0]
         array_text.value = event.control.text.split(" | ")[1]
         results = []
+        run(event)
         page.update()
 
     copy_button = IconButton(
@@ -71,7 +82,6 @@ def main(page: Page) -> None:
         # Calculate combisum and format results
         results = combisum(target, array)
         result_formatted = [[', '.join(str(y) for y in x)] for x in results[0][:5]]
-        print(result_formatted)
         result_text.controls = [
             Text(x[0], 
                 theme_style=TextThemeStyle.BODY_MEDIUM,
@@ -80,14 +90,21 @@ def main(page: Page) -> None:
             ] + [Text(f"...and {len(results[0]) - 5} more") if len(results[0]) > 5 else Text("")]
         error.value = results[1].get("error", "")
         copy_button.visible = True  
-        history.insert(
-            0, {
+        history.append(
+            {
             "target": target_text.value,
             "array": array_text.value,
             "results": results
             }
         )
-        history_view.controls = [TextButton(text=f'{x["target"]} | {x["array"]}', on_click=load_history) for x in history]
+        history_view.controls = [HistoryItem(target=x.get('target'), array=x.get('array'), results=x.get("results"), on_click_function=load_history) for x in list(reversed(history))]
+        for item in history_view.controls:
+            if not item.results[0]:
+                item.style = ft.ButtonStyle(color=ft.colors.RED)
+            else:
+                item.style = ft.ButtonStyle(color=ft.colors.WHITE)
+
+        print(history)
         page.update()
 
     # Create input fields and buttons
@@ -98,7 +115,7 @@ def main(page: Page) -> None:
         [],
         expand=True,
         scroll=ft.ScrollMode.ALWAYS,
-        horizontal_alignment=CrossAxisAlignment.CENTER,
+        horizontal_alignment=CrossAxisAlignment.START,
         alignment=MainAxisAlignment.START
     )
     
@@ -118,7 +135,10 @@ def main(page: Page) -> None:
                             Card(
                                 content=Column(
                                     [
-                                        Text('Input', expand=True, theme_style=TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.LEFT),
+                                        Text('Input', 
+                                             expand=True, 
+                                             theme_style=TextThemeStyle.DISPLAY_SMALL, 
+                                             text_align=ft.TextAlign.LEFT),
                                         target_text,
                                         array_text,
                                         Row(
@@ -154,7 +174,9 @@ def main(page: Page) -> None:
                         [Card(
                             content=Column(
                                 [
-                                    Text('Results', theme_style=TextThemeStyle.DISPLAY_SMALL, text_align=ft.TextAlign.LEFT),
+                                    Text('Results', 
+                                         theme_style=TextThemeStyle.DISPLAY_SMALL, 
+                                         text_align=ft.TextAlign.LEFT),
                                     Row(
                                         [
                                             error,
@@ -183,7 +205,8 @@ def main(page: Page) -> None:
                 ], expand=True,
                 vertical_alignment=CrossAxisAlignment.START
             )
-        ]
+        ],
+        alignment=MainAxisAlignment.SPACE_AROUND
     )
 
     page.add(page_layout)
