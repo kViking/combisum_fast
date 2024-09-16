@@ -17,6 +17,7 @@ from flet import (
     CrossAxisAlignment,
 )
 
+# Create history item class
 class HistoryItem(TextButton):
     def __init__(self, target: str, array: str, results, on_click_function) -> None:
         super().__init__()

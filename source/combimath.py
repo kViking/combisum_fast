@@ -1,6 +1,6 @@
 import torch
 
-def combisum(target, numbers):
+def combisum(target, numbers) -> list[list[float], dict]:
     # Create a dictionary to store flags and error messages
     flag = {
         "cuda": None,  # Flag indicating if CUDA is available
