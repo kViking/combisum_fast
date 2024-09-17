@@ -1,9 +1,10 @@
 import torch
 
-def combisum(target, numbers) -> list[list[float], dict]:
+def combisum(target, numbers, try_cuda) -> list[list[float], dict]:
     # Create a dictionary to store flags and error messages
     flag = {
         "cuda": None,  # Flag indicating if CUDA is available
+        "cpu_mode": try_cuda,  # Flag indicating if CPU mode is enabled
         "max_length": None,  # Maximum combination length for CUDA
         "combo_length": None,  # Current combination length being processed
         "target": target,  # Target sum
@@ -21,7 +22,7 @@ def combisum(target, numbers) -> list[list[float], dict]:
     numbers = numbers if len(int_numbers) != len(numbers) else int_numbers
     target = int(100*target) if type(numbers[0]) == int else target
 
-    if torch.cuda.is_available():
+    if torch.cuda.is_available() and not try_cuda:
         device = torch.device("cuda")  # Use CUDA if available
         flag['cuda'] = True
     else:
@@ -29,8 +30,13 @@ def combisum(target, numbers) -> list[list[float], dict]:
         flag['max_length'] = 5  # Set maximum combination length for CPU
         flag['cuda'] = False
 
-    tensor = torch.tensor(numbers).to(device)  # Convert numbers to tensor and move to device
-    target = torch.tensor(target).to(device)  # Convert target to tensor and move to device
+    try:
+        tensor = torch.tensor(numbers).to(device)  # Convert numbers to tensor and move to device
+        target = torch.tensor(target).to(device)  # Convert target to tensor and move to device
+    except RuntimeError as e:
+        flag["error"] = e
+        flag["error"] += "\n CUDA error loading tensors. Try running on CPU."
+
 
     combinations = []
     for i in range(2, len(numbers) + 1):

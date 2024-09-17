@@ -77,6 +77,8 @@ def main(page: Page) -> None:
         tooltip="Copy all results to clipboard as .tsv raw values",
         visible=False)
     
+    cpu_mode = ft.Checkbox("CPU mode", value=False, tooltip="Run on CPU instead of GPU")
+    
     def run(event: ControlEvent) -> None:
         nonlocal result_text, results, history, error
 
@@ -88,7 +90,7 @@ def main(page: Page) -> None:
         page.update()
 
         # Calculate combisum and format results
-        results = combisum(target, array)
+        results = combisum(target, array, cpu_mode.value)
         result_formatted = [[', '.join(str(y) for y in x)] for x in results[0][:5]]
         result_text.controls = [
             Text(x[0], 
@@ -153,6 +155,7 @@ def main(page: Page) -> None:
                                         array_text,
                                         Row(
                                             [
+                                                cpu_mode,
                                                 button
                                             ], expand=True,
                                             alignment=MainAxisAlignment.END
