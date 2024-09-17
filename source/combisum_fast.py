@@ -2,6 +2,7 @@ import pyperclip
 import flet as ft
 from combimath import combisum
 from flet_core.control_event import ControlEvent
+import pyi_splash as splash
 from flet import (
     Page,
     Row,
@@ -30,6 +31,7 @@ class HistoryItem(TextButton):
 
 
 def main(page: Page) -> None:
+    splash.close()
     # Set page properties
     page.title = "Combisum GPU.0"
     page.vertical_alignment = MainAxisAlignment.START
@@ -225,4 +227,5 @@ def main(page: Page) -> None:
     page.add(page_layout)
 
 if __name__ == "__main__":
+    splash.update_text("Combisum GPU.0")
     ft.app(main)
