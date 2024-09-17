@@ -41,6 +41,11 @@ def main(page: Page) -> None:
     results = []
     history = []
     error = Text("", color=ft.colors.RED)
+    info_modal = ft.AlertDialog(
+        title=Text("Info"),
+        content=Column([]),
+        actions=[TextButton("Close", on_click=lambda e: page.close(info_modal))],
+    )
 
     def toggle_dark_mode(event: ControlEvent) -> None:
         # Toggle dark mode
@@ -90,7 +95,10 @@ def main(page: Page) -> None:
                 expand=True) for x in result_formatted
             ] + [Text(f"...and {len(results[0]) - 5} more") if len(results[0]) > 5 else Text("")]
         error.value = results[1].get("error", "")
-        copy_button.visible = True  
+        copy_button.visible = True
+
+        info_modal.content.controls = [Text(f"{x}: {results[1].get(x)}") for x in results[1]]
+
         history.append(
             {
             "target": target_text.value,
@@ -103,9 +111,8 @@ def main(page: Page) -> None:
             if not item.results[0]:
                 item.style = ft.ButtonStyle(color=ft.colors.RED)
             else:
-                item.style = ft.ButtonStyle(color=ft.colors.WHITE)
+                item.style = ft.ButtonStyle(color=ft.colors.ON_PRIMARY_CONTAINER)
 
-        print(history)
         page.update()
 
     # Create input fields and buttons
@@ -192,7 +199,12 @@ def main(page: Page) -> None:
                                     ),
                                     Row(
                                         [
-                                            copy_button
+                                            copy_button,
+                                            IconButton(
+                                                icon=ft.icons.INFO, 
+                                                on_click=lambda e: page.open(info_modal),
+                                                tooltip="View error details"
+                                            )
                                         ], expand=True,
                                         alignment=MainAxisAlignment.END
                                     )
