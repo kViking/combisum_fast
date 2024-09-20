@@ -8,6 +8,7 @@ from flet import (
     Text,
     Card,
     Column,
+    Container,
     TextField,
     TextButton,
     TextThemeStyle,
@@ -41,22 +42,27 @@ class HistoryItem(TextButton):
 def main(page: Page) -> None:
     if splash_good:
         splash.close()
+
     # Set page properties
     page.title = "Combisum GPU.0"
     page.vertical_alignment = MainAxisAlignment.START
     page.horizontal_alignment = CrossAxisAlignment.CENTER
 
-    # Create result_text column to display results
-    result_text = Column(expand=True, horizontal_alignment=CrossAxisAlignment.CENTER, alignment=MainAxisAlignment.CENTER)
-
+    # Set up variables
     results = []
     history = []
     error = Text("", color=ft.colors.RED)
+
+    # Create result_text and info_modal variables to update later
+    result_text = Column(expand=True, horizontal_alignment=CrossAxisAlignment.CENTER, alignment=MainAxisAlignment.CENTER)
     info_modal = ft.AlertDialog(
         title=Text("Info"),
         content=Column([]),
         actions=[TextButton("Close", on_click=lambda e: page.close(info_modal))],
     )
+
+
+    # Define buttons and button callbacks
 
     def toggle_dark_mode(event: ControlEvent) -> None:
         # Toggle dark mode
@@ -70,6 +76,12 @@ def main(page: Page) -> None:
         tsv = "\n".join(["\t".join([str(y) for y in x]) for x in results[0]])
         pyperclip.copy(tsv)
 
+    copy_button = IconButton(
+        icon=ft.icons.CONTENT_COPY, 
+        on_click=copy_results,
+        tooltip="Copy all results to clipboard as .tsv raw values",
+        visible=False)
+
     def load_history(event: ControlEvent) -> None:
         nonlocal target_text, array_text, results, history, error
         
@@ -79,14 +91,8 @@ def main(page: Page) -> None:
         results = []
         run(event)
         page.update()
-
-    copy_button = IconButton(
-        icon=ft.icons.CONTENT_COPY, 
-        on_click=copy_results,
-        tooltip="Copy all results to clipboard as .tsv raw values",
-        visible=False)
     
-    cpu_mode = ft.Checkbox("CPU mode", value=False, tooltip="Run on CPU instead of GPU")
+    cpu_mode = ft.Checkbox("CPU mode", value=False, tooltip="Restrict to CPU computation")
     
     def run(event: ControlEvent) -> None:
         nonlocal result_text, results, history, error
@@ -119,6 +125,7 @@ def main(page: Page) -> None:
             "results": results
             }
         )
+        history_card.visible = True
         history_view.controls = [HistoryItem(target=x.get('target'), array=x.get('array'), results=x.get("results"), on_click_function=load_history) for x in list(reversed(history))]
         for item in history_view.controls:
             if not item.results[0]:
@@ -140,100 +147,128 @@ def main(page: Page) -> None:
         alignment=MainAxisAlignment.START
     )
     
-    # Create page layout
-    page_layout = Column(
-        [
-            Row(
+    input_card = Card(
+        content=Container(
+            content=Column(
                 [
-                    dark_mode_button
-                ], expand=True,
-                alignment=MainAxisAlignment.END
-            ),
-            Row(
-                [
-                    Column(
+                    Text('Input', 
+                        expand=True, 
+                        theme_style=TextThemeStyle.DISPLAY_SMALL, 
+                        text_align=ft.TextAlign.LEFT),
+                    target_text,
+                    array_text,
+                    Row(
                         [
-                            Card(
-                                content=Column(
-                                    [
-                                        Text('Input', 
-                                             expand=True, 
-                                             theme_style=TextThemeStyle.DISPLAY_SMALL, 
-                                             text_align=ft.TextAlign.LEFT),
-                                        target_text,
-                                        array_text,
-                                        Row(
-                                            [
-                                                cpu_mode,
-                                                button
-                                            ], expand=True,
-                                            alignment=MainAxisAlignment.END
-                                        ),
-                                    ], expand=True,
-                                    alignment=MainAxisAlignment.START,
-                                ), expand=True,
-                            ),
-                            Row(
-                                [Card(
-                                    content=Column(
-                                        [
-                                            Text('History', 
-                                                theme_style=TextThemeStyle.DISPLAY_SMALL, 
-                                                text_align=ft.TextAlign.LEFT, 
-                                                expand=True),
-                                            history_view
-                                        ], expand=True,
-                                        alignment=MainAxisAlignment.START,
-                                    ), expand=True,
-                                )],
-                                expand=True,
-                                alignment=MainAxisAlignment.START,
-                                vertical_alignment=CrossAxisAlignment.START
+                            cpu_mode,
+                            button
+                        ], 
+                        expand=True,
+                        alignment=MainAxisAlignment.END
+                    ),
+                ], 
+                expand=True,
+                alignment=MainAxisAlignment.START,
+            ), 
+            expand=True,
+            padding=12
+        )
+    )
+
+    history_card = Card(
+        content=Container(
+            content=Column(
+                [
+                    Text('History', 
+                        theme_style=TextThemeStyle.DISPLAY_SMALL, 
+                        text_align=ft.TextAlign.LEFT, 
+                        expand=True),
+                    history_view
+                ], expand=True,
+                alignment=MainAxisAlignment.START,
+            ), expand=True,
+            padding=12
+        ), expand=True,
+        visible=False
+    )
+
+    results_card = Card(
+        content=Container(
+            content=Column(
+                [
+                    Row(
+                        [
+                            Text('Results', 
+                            theme_style=TextThemeStyle.DISPLAY_SMALL, 
+                            text_align=ft.TextAlign.LEFT,
+                            expand=True),
+                            copy_button
+                        ],
+                        expand=True,
+                    ),
+                    Row(
+                        [
+                            error,
+                        ], expand=True,
+                        alignment=MainAxisAlignment.CENTER
+                    ),
+                    Row(
+                        [
+                            result_text,
+                        ], expand=True,
+                        alignment=MainAxisAlignment.CENTER
+                    ),
+                    Row(
+                        [
+                            IconButton(
+                                icon=ft.icons.INFO, 
+                                on_click=lambda e: page.open(info_modal),
+                                tooltip="Get debug info"
                             )
                         ], expand=True,
-                    ),
-                    Column(
-                        [Card(
-                            content=Column(
-                                [
-                                    Text('Results', 
-                                         theme_style=TextThemeStyle.DISPLAY_SMALL, 
-                                         text_align=ft.TextAlign.LEFT),
-                                    Row(
-                                        [
-                                            error,
-                                        ], expand=True,
-                                        alignment=MainAxisAlignment.CENTER
-                                    ),
-                                    Row(
-                                        [
-                                            result_text,
-                                        ], expand=True,
-                                        alignment=MainAxisAlignment.CENTER
-                                    ),
-                                    Row(
-                                        [
-                                            copy_button,
-                                            IconButton(
-                                                icon=ft.icons.INFO, 
-                                                on_click=lambda e: page.open(info_modal),
-                                                tooltip="View error details"
-                                            )
-                                        ], expand=True,
-                                        alignment=MainAxisAlignment.END
-                                    )
-                                ], expand=True,
-                                alignment=MainAxisAlignment.START
-                            )
-                        )], expand=True,
-                        alignment=MainAxisAlignment.START
+                        alignment=MainAxisAlignment.END
                     )
-                    
-                ], expand=True,
-                vertical_alignment=CrossAxisAlignment.START
-            )
-        ],
-        alignment=MainAxisAlignment.SPACE_AROUND
+                ], 
+                expand=True,
+            ), 
+            expand=True,
+            padding=12
+        )
+    )           
+
+    # Create page layout
+    page_layout = ft.SafeArea(
+        Column(
+            [
+                Row(
+                    [
+                        dark_mode_button
+                    ], expand=True,
+                    alignment=MainAxisAlignment.END
+                ),
+                Row(
+                    [
+                        Column(
+                            [
+                                input_card,
+                                Row(
+                                    [history_card],
+                                    expand=True,
+                                    alignment=MainAxisAlignment.START,
+                                    vertical_alignment=CrossAxisAlignment.START
+                                )
+                            ], expand=True,
+                        ),
+                        Column(
+                            [results_card], 
+                            expand=True,
+                            alignment=MainAxisAlignment.START
+                        )                        
+                    ], expand=True,
+                    vertical_alignment=CrossAxisAlignment.START
+                )
+            ],
+            alignment=MainAxisAlignment.SPACE_AROUND
+        )
     )
 
     page.add(page_layout)
