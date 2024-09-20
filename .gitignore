@@ -1,5 +1,5 @@
 # Ignore flet_venv 
-flet_venv/** */
+**/flet_venv/
 __pycache__
 .pytest_cache
 *.log
