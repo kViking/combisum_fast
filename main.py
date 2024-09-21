@@ -1,19 +1,20 @@
 import pyperclip
 import flet as ft
-from combimath import combisum
+from combisum import combisum
 from flet_core.control_event import ControlEvent
 from flet import (
-    Page,
     Row,
+    Page,
     Text,
     Card,
     Column,
     Container,
     TextField,
+    TextAlign,
     TextButton,
+    IconButton,
     TextThemeStyle,
     ElevatedButton,
-    IconButton,
     MainAxisAlignment,
     CrossAxisAlignment,
 )
@@ -48,17 +49,23 @@ def main(page: Page) -> None:
     page.vertical_alignment = MainAxisAlignment.START
     page.horizontal_alignment = CrossAxisAlignment.CENTER
 
+
     # Set up variables
     results = []
     history = []
     error = Text("", color=ft.colors.RED)
 
+
     # Create result_text and info_modal variables to update later
     result_text = Column(expand=True, horizontal_alignment=CrossAxisAlignment.CENTER, alignment=MainAxisAlignment.CENTER)
+
+    def close_info_modal(event: ControlEvent) -> None:
+        page.close(info_modal)
+
     info_modal = ft.AlertDialog(
         title=Text("Info"),
         content=Column([]),
-        actions=[TextButton("Close", on_click=lambda e: page.close(info_modal))],
+        actions=[TextButton("Close", on_click=close_info_modal)]
     )
 
 
@@ -92,7 +99,7 @@ def main(page: Page) -> None:
         run(event)
         page.update()
     
-    cpu_mode = ft.Checkbox("CPU mode", value=False, tooltip="Restrict to CPU computation")
+    cpu_mode = ft.Checkbox("CPU only", value=False, tooltip="Restrict to CPU computation")
     
     def run(event: ControlEvent) -> None:
         nonlocal result_text, results, history, error
@@ -107,12 +114,15 @@ def main(page: Page) -> None:
         # Calculate combisum and format results
         results = combisum(target, array, cpu_mode.value)
         result_formatted = [[', '.join(str(y) for y in x)] for x in results[0][:5]]
+
         result_text.controls = [
-            Text(x[0], 
-                theme_style=TextThemeStyle.BODY_MEDIUM,
-                text_align=ft.TextAlign.CENTER, 
-                expand=True) for x in result_formatted
+                TextButton(text=x[0],
+                    on_click=lambda e: pyperclip.copy("\t".join(x[0].split(", "))),
+                    tooltip="Copy this combination to clipboard",
+                    style=ft.ButtonStyle(color=ft.colors.ON_PRIMARY_CONTAINER)
+                ) for x in result_formatted
             ] + [Text(f"...and {len(results[0]) - 5} more") if len(results[0]) > 5 else Text("")]
+        
         error.value = results[1].get("error", "")
         copy_button.visible = True
 
@@ -125,8 +135,10 @@ def main(page: Page) -> None:
             "results": results
             }
         )
+        
         history_card.visible = True
         history_view.controls = [HistoryItem(target=x.get('target'), array=x.get('array'), results=x.get("results"), on_click_function=load_history) for x in list(reversed(history))]
+
         for item in history_view.controls:
             if not item.results[0]:
                 item.style = ft.ButtonStyle(color=ft.colors.RED)
@@ -138,136 +150,145 @@ def main(page: Page) -> None:
     # Create input fields and buttons
     target_text = TextField(value="25.43", on_submit=run)
     array_text = TextField(value="12.85 3.14 5.43 4.56 12.58", on_submit=run)
-    button = ElevatedButton("run", on_click=run)
+    button = ElevatedButton("Run", on_click=run)
     history_view = Column(
-        [],
         expand=True,
         scroll=ft.ScrollMode.ALWAYS,
         horizontal_alignment=CrossAxisAlignment.START,
-        alignment=MainAxisAlignment.START
+        alignment=MainAxisAlignment.START,
+        controls=[]
     )
     
     input_card = Card(
         content=Container(
+            expand=True,
+            padding=12,
             content=Column(
-                [
+                expand=True,
+                alignment=MainAxisAlignment.START,
+                controls=[
                     Text('Input', 
                         expand=True, 
                         theme_style=TextThemeStyle.DISPLAY_SMALL, 
-                        text_align=ft.TextAlign.LEFT),
+                        text_align=TextAlign.LEFT),
                     target_text,
                     array_text,
                     Row(
-                        [
+                        expand=True,
+                        alignment=MainAxisAlignment.END,
+                        controls=[
                             cpu_mode,
                             button
-                        ], 
-                        expand=True,
-                        alignment=MainAxisAlignment.END
-                    ),
-                ], 
-                expand=True,
-                alignment=MainAxisAlignment.START,
-            ), 
-            expand=True,
-            padding=12
+                        ]
+                    )
+                ]
+            )
         )
     )
 
     history_card = Card(
+        expand=True,
+        visible=False,
         content=Container(
+            expand=True,
+            padding=12,
             content=Column(
-                [
+                expand=True,
+                alignment=MainAxisAlignment.START,
+                controls=[
                     Text('History', 
                         theme_style=TextThemeStyle.DISPLAY_SMALL, 
-                        text_align=ft.TextAlign.LEFT, 
+                        text_align=TextAlign.LEFT, 
                         expand=True),
                     history_view
-                ], expand=True,
-                alignment=MainAxisAlignment.START,
-            ), expand=True,
-            padding=12
-        ), expand=True,
-        visible=False
+                ]
+            )
+        )
     )
 
     results_card = Card(
         content=Container(
+            expand=True,
+            padding=12,
             content=Column(
-                [
+                expand=True,
+                controls=[
                     Row(
-                        [
+                        expand=True,
+                        controls=[
                             Text('Results', 
                             theme_style=TextThemeStyle.DISPLAY_SMALL, 
-                            text_align=ft.TextAlign.LEFT,
+                            text_align=TextAlign.LEFT,
                             expand=True),
                             copy_button
-                        ],
+                        ]
+                    ),
+                    Row(
                         expand=True,
-                    ),
-                    Row(
-                        [
+                        alignment=MainAxisAlignment.CENTER,
+                        controls=[
                             error,
-                        ], expand=True,
-                        alignment=MainAxisAlignment.CENTER
+                        ]
                     ),
                     Row(
-                        [
+                        expand=True,
+                        alignment=MainAxisAlignment.START,
+                        vertical_alignment=CrossAxisAlignment.START,
+                        controls=[
                             result_text,
-                        ], expand=True,
-                        alignment=MainAxisAlignment.CENTER
+                        ]
                     ),
                     Row(
-                        [
+                        expand=True,
+                        alignment=MainAxisAlignment.END,
+                        controls=[
                             IconButton(
                                 icon=ft.icons.INFO, 
                                 on_click=lambda e: page.open(info_modal),
                                 tooltip="Get debug info"
                             )
-                        ], expand=True,
-                        alignment=MainAxisAlignment.END
+                        ]
                     )
-                ], 
-                expand=True,
-            ), 
-            expand=True,
-            padding=12
+                ]
+            )
         )
     )           
 
-    # Create page layout
     page_layout = ft.SafeArea(
         Column(
-            [
+            alignment=MainAxisAlignment.SPACE_AROUND,
+            controls=[
                 Row(
-                    [
+                    expand=True,
+                    alignment=MainAxisAlignment.END,
+                    controls=[
                         dark_mode_button
-                    ], expand=True,
-                    alignment=MainAxisAlignment.END
+                    ]
                 ),
                 Row(
-                    [
+                    vertical_alignment=CrossAxisAlignment.START,
+                    expand=True,
+                    controls=[
                         Column(
-                            [
+                            expand=True,
+                            controls=[
                                 input_card,
                                 Row(
-                                    [history_card],
                                     expand=True,
                                     alignment=MainAxisAlignment.START,
-                                    vertical_alignment=CrossAxisAlignment.START
+                                    vertical_alignment=CrossAxisAlignment.START,
+                                    controls=[history_card]
                                 )
-                            ], expand=True,
+                            ]
                         ),
                         Column(
-                            [results_card], 
                             expand=True,
-                            alignment=MainAxisAlignment.START
+                            alignment=MainAxisAlignment.START,
+                            controls=[results_card]
                         )                        
-                    ], expand=True,
-                    vertical_alignment=CrossAxisAlignment.START
+                    ] 
                 )
-            ],
-            alignment=MainAxisAlignment.SPACE_AROUND
+            ]
         )
     )
 
