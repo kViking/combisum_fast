@@ -41,7 +41,14 @@ def combisum(target, numbers, try_cuda) -> list[list[float], dict]:
     combinations = []
     for i in range(2, len(numbers) + 1):
         if flag['max_length'] and i > flag['max_length']:
-            flag["error"] = f"CUDA not accessible. CPU run with restricted combination length {flag['max_length']}" if flag["cuda"] else "Reached device's computational limit"
+            if flag["cuda"]:
+                flag["error"] = (
+                    f"CUDA not accessible. CPU run with restricted combination length {flag['max_length']}"
+                )
+            else:
+                flag["error"] = (
+                    "Reached memory limit. Increase VRAM or decrease candidates to process longer combinations"
+                )
             break
         try:
             combs = torch.combinations(tensor, r=i, with_replacement=False)  # Generate combinations of length i
