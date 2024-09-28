@@ -48,7 +48,7 @@ def combisum(target, numbers, try_cuda) -> list[list[float], dict]:
             combinations.append(combs)  # Add combinations to the list
             flag['combo_length'] = i  # Update the current combination length
         except Exception as e:
-            flag["error"] = "Reached device's computational limit"  # Handle exception when reaching computational limit
+            flag["error"] = "Reached memory limit. Increase VRAM or decrease candidates to process longer combinations"  # Handle exception when reaching computational limit
             break
 
     valid_combinations = []

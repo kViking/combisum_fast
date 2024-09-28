@@ -53,7 +53,28 @@ def main(page: Page) -> None:
     # Set up variables
     results = []
     history = []
-    error = Text("", color=ft.colors.RED)
+
+    # Error display
+    error = Text("")
+    error_button = IconButton(
+        icon=ft.icons.ERROR, 
+        tooltip="Display error info", 
+        on_click=lambda e: page.open(error_modal),
+        style=ft.ButtonStyle(color=ft.colors.RED),
+        visible=False
+    )
+
+    def close_error_modal(event: ControlEvent) -> None:
+        page.close(error_modal)
+
+    error_modal = ft.AlertDialog(
+        title=Text("Error"),
+        content=Column([
+            error
+        ]),
+        actions=[TextButton("Close", on_click=close_error_modal)]
+    )
+
 
 
     # Create result_text and info_modal variables to update later
@@ -124,7 +145,8 @@ def main(page: Page) -> None:
             ] + [Text(f"...and {len(results[0]) - 5} more") if len(results[0]) > 5 else Text("")]
         
         error.value = results[1].get("error", "")
-        copy_button.visible = True
+        error_button.visible = bool(error.value)
+        copy_button.visible = bool(results[0])
 
         info_modal.content.controls = [Text(f"{x}: {results[1].get(x)}") for x in results[1]]
 
@@ -137,7 +159,12 @@ def main(page: Page) -> None:
         )
         
         history_card.visible = True
-        history_view.controls = [HistoryItem(target=x.get('target'), array=x.get('array'), results=x.get("results"), on_click_function=load_history) for x in list(reversed(history))]
+        history_view.controls = [
+            HistoryItem(target=x.get('target'), 
+                        array=x.get('array'), 
+                        results=x.get("results"), 
+                        on_click_function=load_history
+            ) for x in list(reversed(history))]
 
         for item in history_view.controls:
             if not item.results[0]:
@@ -216,18 +243,12 @@ def main(page: Page) -> None:
                     Row(
                         expand=True,
                         controls=[
+                            error_button,
                             Text('Results', 
                             theme_style=TextThemeStyle.DISPLAY_SMALL, 
                             text_align=TextAlign.LEFT,
                             expand=True),
                             copy_button
-                        ]
-                    ),
-                    Row(
-                        expand=True,
-                        alignment=MainAxisAlignment.CENTER,
-                        controls=[
-                            error,
                         ]
                     ),
                     Row(
@@ -243,7 +264,7 @@ def main(page: Page) -> None:
                         alignment=MainAxisAlignment.END,
                         controls=[
                             IconButton(
-                                icon=ft.icons.INFO, 
+                                icon=ft.icons.CODE, 
                                 on_click=lambda e: page.open(info_modal),
                                 tooltip="Get debug info"
                             )
